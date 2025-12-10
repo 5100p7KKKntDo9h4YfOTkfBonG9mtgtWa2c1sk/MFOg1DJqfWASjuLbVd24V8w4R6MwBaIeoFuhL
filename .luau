@@ -775,7 +775,7 @@ CheckMark.ZIndex = 4
 CheckMark.Font = Enum.Font.Oswald
 CheckMark.Text = ""
 CheckMark.TextColor3 = Color3.new(0, 1, 0)
-CheckMark.TextSize = 30
+CheckMark.TextSize = 25
 
 Keybind.Name = "Keybind"
 Keybind.Parent = Prefabs

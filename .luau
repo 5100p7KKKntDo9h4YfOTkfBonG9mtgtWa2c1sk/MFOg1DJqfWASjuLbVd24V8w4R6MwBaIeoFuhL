@@ -256,7 +256,7 @@ Slider.Parent = Prefabs
 Slider.BackgroundColor3 = Color3.new(1, 1, 1)
 Slider.BackgroundTransparency = 1
 Slider.Position = UDim2.new(0, 0, 0.178571433, 0)
-Slider.Size = UDim2.new(1, 0, 0, 35)  
+Slider.Size = UDim2.new(1, 0, 0, 20)
 Slider.Image = "rbxassetid://2851929490"
 Slider.ImageColor3 = Color3.new(0.145098, 0.14902, 0.156863)
 Slider.ScaleType = Enum.ScaleType.Slice
@@ -266,66 +266,54 @@ Title_2.Name = "Title"
 Title_2.Parent = Slider
 Title_2.BackgroundColor3 = Color3.new(1, 1, 1)
 Title_2.BackgroundTransparency = 1
-Title_2.Position = UDim2.new(0, 10, 0, 2)
-Title_2.Size = UDim2.new(0, 200, 0, 15)
+Title_2.Position = UDim2.new(0.5, 0, 0.5, -10)
+Title_2.Size = UDim2.new(0, 0, 0, 20)
 Title_2.ZIndex = 2
-Title_2.Font = Enum.Font.GothamBold
+Title_2.Font = Enum.Font.Merriweather
 Title_2.Text = "Slider"
-Title_2.TextColor3 = Color3.new(0.9, 0.9, 0.9)
-Title_2.TextSize = 14
-Title_2.TextXAlignment = Enum.TextXAlignment.Left
-
-local SliderTrack = Instance.new("Frame")
-SliderTrack.Name = "SliderTrack"
-SliderTrack.Parent = Slider
-SliderTrack.BackgroundColor3 = Color3.new(0.2, 0.2, 0.22)
-SliderTrack.BorderSizePixel = 0
-SliderTrack.Position = UDim2.new(0, 10, 0, 20)
-SliderTrack.Size = UDim2.new(1, -90, 0, 6)
-SliderTrack.ZIndex = 1
-
--- Rounded corners
-local TrackCorner = Instance.new("UICorner")
-TrackCorner.CornerRadius = UDim.new(0, 3)
-TrackCorner.Parent = SliderTrack
+Title_2.TextColor3 = Color3.new(0.784314, 0.784314, 0.784314)
+Title_2.TextSize = 17
 
 Indicator.Name = "Indicator"
-Indicator.Parent = SliderTrack
-Indicator.BackgroundColor3 = Color3.new(0.254902, 0.262745, 0.278431)
-Indicator.BorderSizePixel = 0
-Indicator.Size = UDim2.new(0, 0, 1, 0)  
-Indicator.ZIndex = 2
-Indicator.Image = ""  
-
-local IndicatorCorner = Instance.new("UICorner")
-IndicatorCorner.CornerRadius = UDim.new(0, 3)
-IndicatorCorner.Parent = Indicator
-
-local SliderButton = Instance.new("Frame")
-SliderButton.Name = "SliderButton"
-SliderButton.Parent = Slider
-SliderButton.BackgroundColor3 = Color3.new(1, 1, 1)
-SliderButton.BorderSizePixel = 0
-SliderButton.Position = UDim2.new(0, 7, 0, 17)
-SliderButton.Size = UDim2.new(0, 12, 0, 12)
-SliderButton.ZIndex = 3
-
-local ButtonCorner = Instance.new("UICorner")
-ButtonCorner.CornerRadius = UDim.new(1, 0)  
-ButtonCorner.Parent = SliderButton
+Indicator.Parent = Slider
+Indicator.BackgroundColor3 = Color3.new(1, 1, 1)
+Indicator.BackgroundTransparency = 1
+Indicator.Size = UDim2.new(0, 0, 0, 20)
+Indicator.Image = "rbxassetid://2851929490"
+Indicator.ImageColor3 = Color3.new(0.254902, 0.262745, 0.278431)
+Indicator.ScaleType = Enum.ScaleType.Slice
+Indicator.SliceCenter = Rect.new(4, 4, 4, 4)
 
 Value.Name = "Value"
 Value.Parent = Slider
 Value.BackgroundColor3 = Color3.new(1, 1, 1)
 Value.BackgroundTransparency = 1
-Value.Position = UDim2.new(1, -70, 0, 2)
-Value.Size = UDim2.new(0, 60, 0, 15)
-Value.Font = Enum.Font.GothamBold
-Value.Text = "0"
+Value.Position = UDim2.new(1, -55, 0.5, -10)
+Value.Size = UDim2.new(0, 50, 0, 20)
+Value.Font = Enum.Font.Garamond
+Value.Text = "0%"
 Value.TextColor3 = Color3.new(0.784314, 0.784314, 0.784314)
-Value.TextSize = 14
-Value.TextXAlignment = Enum.TextXAlignment.Right
-Value.ZIndex = 2
+Value.TextSize = 17
+
+TextLabel.Parent = Slider
+TextLabel.BackgroundColor3 = Color3.new(1, 1, 1)
+TextLabel.BackgroundTransparency = 1
+TextLabel.Position = UDim2.new(1, -20, -0.75, 0)
+TextLabel.Size = UDim2.new(0, 26, 0, 50)
+TextLabel.Font = Enum.Font.Garamond
+TextLabel.Text = "]"
+TextLabel.TextColor3 = Color3.new(0.627451, 0.627451, 0.627451)
+TextLabel.TextSize = 17
+
+TextLabel_2.Parent = Slider
+TextLabel_2.BackgroundColor3 = Color3.new(1, 1, 1)
+TextLabel_2.BackgroundTransparency = 1
+TextLabel_2.Position = UDim2.new(1, -65, -0.75, 0)
+TextLabel_2.Size = UDim2.new(0, 26, 0, 50)
+TextLabel_2.Font = Enum.Font.Oswald
+TextLabel_2.Text = "["
+TextLabel_2.TextColor3 = Color3.new(0.627451, 0.627451, 0.627451)
+TextLabel_2.TextSize = 17
 
 Circle.Name = "Circle"
 Circle.Parent = Prefabs
@@ -994,35 +982,26 @@ function library:AddWindow(title, options)
 	Window.ZIndex = Window.ZIndex + (windows * 10)
 
 	do -- Altering Window Color
-    local Title = Window:FindFirstChild("Title")
-    local Bar = Window:FindFirstChild("Bar")
-    local Base = Bar:FindFirstChild("Base")
-    local Top = Bar:FindFirstChild("Top")
-    local SplitFrame = Window:FindFirstChild("TabSelection"):FindFirstChild("Frame")
-    local Toggle = Bar:FindFirstChild("Toggle")
+		local Title = Window:FindFirstChild("Title")
+		local Bar = Window:FindFirstChild("Bar")
+		local Base = Bar:FindFirstChild("Base")
+		local Top = Bar:FindFirstChild("Top")
+		local SplitFrame = Window:FindFirstChild("TabSelection"):FindFirstChild("Frame")
+		local Toggle = Bar:FindFirstChild("Toggle")
 
-    spawn(function()
-        while true do
-            Bar.BackgroundColor3 = options.main_color
-            Base.BackgroundColor3 = options.main_color
-            Base.ImageColor3 = options.main_color
-            Top.ImageColor3 = options.main_color
-            SplitFrame.BackgroundColor3 = options.main_color
+		spawn(function()
+			while true do
+				Bar.BackgroundColor3 = options.main_color
+				Base.BackgroundColor3 = options.main_color
+				Base.ImageColor3 = options.main_color
+				Top.ImageColor3 = options.main_color
+				SplitFrame.BackgroundColor3 = options.main_color
 
-            for _, slider in pairs(Window:GetDescendants()) do
-                if slider.Name == "Indicator" and slider.Parent.Name == "SliderTrack" then
-                    slider.BackgroundColor3 = options.main_color
-                end
-                if slider.Name == "SliderButton" then
-                    slider.BackgroundColor3 = Color3.new(1, 1, 1) 
-                end
-            end
+				RS.Heartbeat:Wait()
+			end
+		end)
 
-            RS.Heartbeat:Wait()
-        end
-    end)
-
-end
+	end
 
 	local Resizer = Window:WaitForChild("Resizer")
 
@@ -1323,99 +1302,83 @@ end
 						title.Text = slider_text
 
 						do -- Slider Math
-    local Entered = false
-    slider.MouseEnter:Connect(function()
-        Entered = true
-        Window.Draggable = false
-    end)
-    slider.MouseLeave:Connect(function()
-        Entered = false
-        Window.Draggable = true
-    end)
+							local Entered = false
+							slider.MouseEnter:Connect(function()
+								Entered = true
+								Window.Draggable = false
+							end)
+							slider.MouseLeave:Connect(function()
+								Entered = false
+								Window.Draggable = true
+							end)
 
-    local SliderButton = slider:FindFirstChild("SliderButton")  -- DAGDAG: kunin yung button
-    local track = slider:FindFirstChild("SliderTrack")  -- DAGDAG: kunin yung track
+							local Held = false
+							UIS.InputBegan:Connect(function(inputObject)
+								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+									Held = true
 
-    local Held = false
-    UIS.InputBegan:Connect(function(inputObject)
-        if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-            Held = true
+									spawn(function() -- Loop check
+										if Entered and not slider_options.readonly then
+											while Held and (not dropdown_open) do
+												local mouse_location = gMouse()
+												local x = (slider.AbsoluteSize.X - (slider.AbsoluteSize.X - ((mouse_location.X - slider.AbsolutePosition.X)) + 1)) / slider.AbsoluteSize.X
 
-            spawn(function() -- Loop check
-                if Entered and not slider_options.readonly then
-                    while Held and (not dropdown_open) do
-                        local mouse_location = gMouse()
-                        
-                        
-                        local track_pos = track.AbsolutePosition.X
-                        local track_size = track.AbsoluteSize.X
-                        local x = (mouse_location.X - track_pos) / track_size
+												local min = 0
+												local max = 1
 
-                        local min = 0
-                        local max = 1
+												local size = min
+												if x >= min and x <= max then
+													size = x
+												elseif x < min then
+													size = min
+												elseif x > max then
+													size = max
+												end
 
-                        local size = min
-                        if x >= min and x <= max then
-                            size = x
-                        elseif x < min then
-                            size = min
-                        elseif x > max then
-                            size = max
-                        end
+												Resize(indicator, {Size = UDim2.new(size or min, 0, 0, 20)}, options.tween_time)
+												
+												local p = math.floor((size or min) * 100)
 
-                        -- BAGONG CODE: Update indicator
-                        Resize(indicator, {Size = UDim2.new(size or min, 0, 1, 0)}, options.tween_time)
-                        
-                        -- BAGONG CODE: Update slider button position
-                        local button_pos = (size or min) * track_size
-                        Resize(SliderButton, {Position = UDim2.new(0, button_pos + 7, 0, 17)}, options.tween_time)
-                        
-                        local p = math.floor((size or min) * 100)
+												local maxv = slider_options.max
+												local minv = slider_options.min
+												local diff = maxv - minv
 
-                        local maxv = slider_options.max
-                        local minv = slider_options.min
-                        local diff = maxv - minv
+												local sel_value = math.floor(((diff / 100) * p) + minv)
 
-                        local sel_value = math.floor(((diff / 100) * p) + minv)
+												value.Text = tostring(sel_value)
+												pcall(callback, sel_value)
 
-                        value.Text = tostring(sel_value)
-                        pcall(callback, sel_value)
+												RS.Heartbeat:Wait()
+											end
+										end
+									end)
+								end
+							end)
+							UIS.InputEnded:Connect(function(inputObject)
+								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+									Held = false
+								end
+							end)
 
-                        RS.Heartbeat:Wait()
-                    end
-                end
-            end)
-        end
-    end)
-    UIS.InputEnded:Connect(function(inputObject)
-        if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-            Held = false
-        end
-    end)
+							function slider_data:Set(new_value)
+								new_value = tonumber(new_value) or 0
+								new_value = (((new_value >= 0 and new_value <= 100) and new_value) / 100)
 
-    function slider_data:Set(new_value)
-        new_value = tonumber(new_value) or 0
-        new_value = (((new_value >= 0 and new_value <= 100) and new_value) / 100)
-        Resize(indicator, {Size = UDim2.new(new_value or 0, 0, 1, 0)}, options.tween_time)
-        
-        local track_size = track.AbsoluteSize.X
-        local button_pos = (new_value or 0) * track_size
-        Resize(SliderButton, {Position = UDim2.new(0, button_pos + 7, 0, 17)}, options.tween_time)
-        
-        local p = math.floor((new_value or 0) * 100)
+								Resize(indicator, {Size = UDim2.new(new_value or 0, 0, 0, 20)}, options.tween_time)
+								local p = math.floor((new_value or 0) * 100)
 
-        local maxv = slider_options.max
-        local minv = slider_options.min
-        local diff = maxv - minv
+								local maxv = slider_options.max
+								local minv = slider_options.min
+								local diff = maxv - minv
 
-        local sel_value = math.floor(((diff / 100) * p) + minv)
+								local sel_value = math.floor(((diff / 100) * p) + minv)
 
-        value.Text = tostring(sel_value)
-        pcall(callback, sel_value)
-    end
+								value.Text = tostring(sel_value)
+								pcall(callback, sel_value)
+							end
 
-    slider_data:Set(slider_options["min"])
-end
+							slider_data:Set(slider_options["min"])
+						end
 
 						return slider_data, slider
 					end

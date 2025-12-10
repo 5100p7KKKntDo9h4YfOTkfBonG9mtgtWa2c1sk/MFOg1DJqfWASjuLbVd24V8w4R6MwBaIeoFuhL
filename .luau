@@ -769,13 +769,13 @@ CheckMark.Name = "CheckMark"
 CheckMark.Parent = MultiSelectButton
 CheckMark.BackgroundColor3 = Color3.new(1, 1, 1)
 CheckMark.BackgroundTransparency = 1
-CheckMark.Position = UDim2.new(1, -20, 0, 0)
+CheckMark.Position = UDim2.new(1, -50, 0, 0)
 CheckMark.Size = UDim2.new(0, 20, 0, 20)
 CheckMark.ZIndex = 4
 CheckMark.Font = Enum.Font.Oswald
 CheckMark.Text = ""
 CheckMark.TextColor3 = Color3.new(0, 1, 0)
-CheckMark.TextSize = 20
+CheckMark.TextSize = 50
 
 Keybind.Name = "Keybind"
 Keybind.Parent = Prefabs
@@ -796,7 +796,7 @@ Title_4.Font = Enum.Font.Garamond
 Title_4.Text = "Keybind"
 Title_4.TextColor3 = Color3.new(0.784314, 0.784314, 0.784314)
 Title_4.TextSize = 17
-Title_4.TextXAlignment = Enum.TextXAlignment.Right
+Title_4.TextXAlignment = Enum.TextXAlignment.Left
 
 Input.Name = "Input"
 Input.Parent = Keybind

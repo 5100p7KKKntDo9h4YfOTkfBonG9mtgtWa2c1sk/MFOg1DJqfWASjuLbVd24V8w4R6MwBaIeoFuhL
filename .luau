@@ -775,7 +775,7 @@ CheckMark.ZIndex = 4
 CheckMark.Font = Enum.Font.Oswald
 CheckMark.Text = ""
 CheckMark.TextColor3 = Color3.new(0, 1, 0)
-CheckMark.TextSize = 18
+CheckMark.TextSize = 20
 
 Keybind.Name = "Keybind"
 Keybind.Parent = Prefabs
@@ -796,7 +796,7 @@ Title_4.Font = Enum.Font.Garamond
 Title_4.Text = "Keybind"
 Title_4.TextColor3 = Color3.new(0.784314, 0.784314, 0.784314)
 Title_4.TextSize = 17
-Title_4.TextXAlignment = Enum.TextXAlignment.Left
+Title_4.TextXAlignment = Enum.TextXAlignment.Right
 
 Input.Name = "Input"
 Input.Parent = Keybind

@@ -769,13 +769,13 @@ CheckMark.Name = "CheckMark"
 CheckMark.Parent = MultiSelectButton
 CheckMark.BackgroundColor3 = Color3.new(1, 1, 1)
 CheckMark.BackgroundTransparency = 1
-CheckMark.Position = UDim2.new(1, -30, 0, 0)
+CheckMark.Position = UDim2.new(1, -20, 0, 0)
 CheckMark.Size = UDim2.new(0, 20, 0, 20)
 CheckMark.ZIndex = 4
 CheckMark.Font = Enum.Font.Oswald
 CheckMark.Text = ""
 CheckMark.TextColor3 = Color3.new(0, 1, 0)
-CheckMark.TextSize = 23
+CheckMark.TextSize = 18
 
 Keybind.Name = "Keybind"
 Keybind.Parent = Prefabs
@@ -1300,85 +1300,86 @@ function library:AddWindow(title, options)
 						value.ZIndex = value.ZIndex + (windows * 10)
 
 						title.Text = slider_text
-
+						
+						
 						do -- Slider Math
-							local Entered = false
-							slider.MouseEnter:Connect(function()
-								Entered = true
-								Window.Draggable = false
-							end)
-							slider.MouseLeave:Connect(function()
-								Entered = false
-								Window.Draggable = true
-							end)
+    -- Add visual circle indicator
+    local circle = Instance.new("ImageLabel")
+    circle.Name = "Circle"
+    circle.Parent = indicator
+    circle.AnchorPoint = Vector2.new(0.5, 0.5)
+    circle.BackgroundTransparency = 1
+    circle.Position = UDim2.new(1, 0, 0.5, 0)
+    circle.Size = UDim2.new(0, 16, 0, 16)
+    circle.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    circle.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    circle.ZIndex = indicator.ZIndex + 2
+    
+    -- Make it circular
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(1, 0)
+    corner.Parent = circle
 
-							local Held = false
-							UIS.InputBegan:Connect(function(inputObject)
-								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-									Held = true
+    local function UpdateSlider(inputPosition)
+        if slider_options.readonly then return end
+        
+        local relativeX = inputPosition.X - slider.AbsolutePosition.X
+        local percentage = math.clamp(relativeX / slider.AbsoluteSize.X, 0, 1)
+        
+        Resize(indicator, {Size = UDim2.new(percentage, 0, 0, 20)}, options.tween_time)
+        
+        local maxv = slider_options.max
+        local minv = slider_options.min
+        local diff = maxv - minv
+        local sel_value = math.floor(((diff * percentage)) + minv)
+        
+        value.Text = tostring(sel_value)
+        pcall(callback, sel_value)
+    end
 
-									spawn(function() -- Loop check
-										if Entered and not slider_options.readonly then
-											while Held and (not dropdown_open) do
-												local mouse_location = gMouse()
-												local x = (slider.AbsoluteSize.X - (slider.AbsoluteSize.X - ((mouse_location.X - slider.AbsolutePosition.X)) + 1)) / slider.AbsoluteSize.X
+    local dragging = false
+    
+    -- Touch/Click Start
+    slider.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+           input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            Window.Draggable = false
+            UpdateSlider(input.Position)
+        end
+    end)
+    
+    -- Touch/Click Move
+    slider.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or 
+           input.UserInputType == Enum.UserInputType.Touch) then
+            UpdateSlider(input.Position)
+        end
+    end)
+    
+    -- Touch/Click End
+    UIS.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+           input.UserInputType == Enum.UserInputType.Touch then
+            dragging = false
+            Window.Draggable = true
+        end
+    end)
 
-												local min = 0
-												local max = 1
+    function slider_data:Set(new_value)
+        new_value = tonumber(new_value) or 0
+        local percentage = math.clamp((new_value - slider_options.min) / (slider_options.max - slider_options.min), 0, 1)
+        
+        Resize(indicator, {Size = UDim2.new(percentage, 0, 0, 20)}, options.tween_time)
+        
+        value.Text = tostring(new_value)
+        pcall(callback, new_value)
+    end
 
-												local size = min
-												if x >= min and x <= max then
-													size = x
-												elseif x < min then
-													size = min
-												elseif x > max then
-													size = max
-												end
+    slider_data:Set(slider_options["min"])
+end
 
-												Resize(indicator, {Size = UDim2.new(size or min, 0, 0, 20)}, options.tween_time)
-												
-												local p = math.floor((size or min) * 100)
 
-												local maxv = slider_options.max
-												local minv = slider_options.min
-												local diff = maxv - minv
-
-												local sel_value = math.floor(((diff / 100) * p) + minv)
-
-												value.Text = tostring(sel_value)
-												pcall(callback, sel_value)
-
-												RS.Heartbeat:Wait()
-											end
-										end
-									end)
-								end
-							end)
-							UIS.InputEnded:Connect(function(inputObject)
-								if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
-									Held = false
-								end
-							end)
-
-							function slider_data:Set(new_value)
-								new_value = tonumber(new_value) or 0
-								new_value = (((new_value >= 0 and new_value <= 100) and new_value) / 100)
-
-								Resize(indicator, {Size = UDim2.new(new_value or 0, 0, 0, 20)}, options.tween_time)
-								local p = math.floor((new_value or 0) * 100)
-
-								local maxv = slider_options.max
-								local minv = slider_options.min
-								local diff = maxv - minv
-
-								local sel_value = math.floor(((diff / 100) * p) + minv)
-
-								value.Text = tostring(sel_value)
-								pcall(callback, sel_value)
-							end
-
-							slider_data:Set(slider_options["min"])
-						end
 
 						return slider_data, slider
 					end

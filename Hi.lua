@@ -137,7 +137,7 @@ LogoButton.Name = "LogoButton"
 LogoButton.Parent = Bar
 LogoButton.BackgroundColor3 = Color3.new(1, 1, 1)
 LogoButton.BackgroundTransparency = 1
-LogoButton.Position = UDim2.new(1, -25, 0, -2)  
+LogoButton.Position = UDim2.new(1, -50, 0, -2)   
 LogoButton.Size = UDim2.new(0, 20, 0, 20)
 LogoButton.ZIndex = 2
 LogoButton.Image = "rbxassetid://107371206137546"
@@ -165,22 +165,12 @@ Bar.BorderSizePixel = 0
 Bar.Position = UDim2.new(0, 0, 0, 5)
 Bar.Size = UDim2.new(1, 0, 0, 15)
 
-Toggle.Name = "Toggle"
-Toggle.Parent = Bar
-Toggle.BackgroundColor3 = Color3.new(1, 1, 1)
-Toggle.BackgroundTransparency = 1
-Toggle.Position = UDim2.new(0, 5, 0, -2)
-Toggle.Rotation = 90
-Toggle.Size = UDim2.new(0, 20, 0, 20)
-Toggle.ZIndex = 2
-Toggle.Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=600&height=600&assetId=107371206137546"
-
 local Close = Instance.new("ImageButton")
 Close.Name = "Close"
 Close.Parent = Bar
 Close.BackgroundColor3 = Color3.new(1, 1, 1)
 Close.BackgroundTransparency = 1
-Close.Position = UDim2.new(1, -25, 0, -2)
+Close.Position = UDim2.new(1, -25, 0, -2)  
 Close.Size = UDim2.new(0, 20, 0, 20)
 Close.ZIndex = 2
 Close.Image = "rbxassetid://3926305904"
@@ -1112,26 +1102,70 @@ function library:AddWindow(title, options)
 	end
 
 	do -- [Hide / Close] Window
-	local hide_button = Window:FindFirstChild("Bar"):FindFirstChild("Toggle")
 	local close_button = Window:FindFirstChild("Bar"):FindFirstChild("Close")
 	local logo_button = Window:FindFirstChild("Bar"):FindFirstChild("LogoButton")
 	
-	-- HIDE BUTTON (Toggle arrow)
-	hide_button.MouseButton1Click:Connect(function()
-		Window.Visible = false
+	-- Create floating logo for when GUI is hidden
+	local FloatingLogo = Instance.new("ImageButton")
+	FloatingLogo.Name = "FloatingLogo"
+	FloatingLogo.Parent = script.Parent
+	FloatingLogo.BackgroundColor3 = Color3.new(1, 1, 1)
+	FloatingLogo.BackgroundTransparency = 0.5
+	FloatingLogo.Position = UDim2.new(0.5, -25, 0.5, -25)
+	FloatingLogo.Size = UDim2.new(0, 50, 0, 50)
+	FloatingLogo.Image = "rbxassetid://107371206137546"  -- Same as logo button
+	FloatingLogo.ScaleType = Enum.ScaleType.Fit
+	FloatingLogo.Visible = false
+	FloatingLogo.Draggable = true
+	FloatingLogo.Active = true
+	FloatingLogo.ZIndex = 9999
+	
+	-- Add corner to floating logo
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 8)
+	corner.Parent = FloatingLogo
+	
+	-- Add stroke to floating logo
+	local stroke = Instance.new("UIStroke")
+	stroke.Color = Color3.fromRGB(255, 255, 255)
+	stroke.Thickness = 2
+	stroke.Transparency = 0.5
+	stroke.Parent = FloatingLogo
+	
+	-- Sync floating logo color with main color
+	spawn(function()
+		while FloatingLogo and FloatingLogo.Parent do
+			FloatingLogo.ImageColor3 = options.main_color
+			RS.Heartbeat:Wait()
+		end
 	end)
 	
-	-- LOGO BUTTON (Show GUI ulit)
-	logo_button.MouseButton1Click:Connect(function()
+	-- Store original state
+	local originalSize = UDim2.new(0, options.min_size.X, 0, options.min_size.Y)
+	
+	-- CLOSE BUTTON (RED BOX) - HIDE GUI + Show Floating Logo
+	close_button.MouseButton1Click:Connect(function()
+		-- Hide entire window
+		Window.Visible = false
+		-- Show floating logo
+		FloatingLogo.Visible = true
+	end)
+	
+	-- FLOATING LOGO - Click to show GUI again
+	FloatingLogo.MouseButton1Click:Connect(function()
+		-- Hide floating logo
+		FloatingLogo.Visible = false
+		-- Show window
 		Window.Visible = true
 	end)
 	
-	-- CLOSE BUTTON (X - destroy window)
-	close_button.MouseButton1Click:Connect(function()
+	-- LOGO BUTTON (YELLOW BOX) - DESTROY/CLOSE GUI completely
+	logo_button.MouseButton1Click:Connect(function()
 		Window:Destroy()
+		FloatingLogo:Destroy()
 	end)
 	
-	-- Logo color sync
+	-- Logo button color sync
 	spawn(function()
 		while logo_button and logo_button.Parent do
 			logo_button.ImageColor3 = options.main_color

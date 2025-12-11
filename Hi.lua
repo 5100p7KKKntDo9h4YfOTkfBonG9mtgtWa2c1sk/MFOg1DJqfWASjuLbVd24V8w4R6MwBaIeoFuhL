@@ -118,48 +118,42 @@ Window.Size = UDim2.new(0, 200, 0, 200)
 Window.Image = "rbxassetid://2851926732"
 Window.ImageColor3 = Color3.new(0.0823529, 0.0862745, 0.0901961)
 Window.ScaleType = Enum.ScaleType.Slice
-Window.SliceCenter = Rect.new(12, 12, 12, 12) 
+Window.SliceCenter = Rect.new(12, 12, 12, 12)
 
-local Close = Instance.new("ImageButton")
-Close.Name = "Close"
-Close.Parent = Bar
-Close.BackgroundColor3 = Color3.new(1, 1, 1)
-Close.BackgroundTransparency = 1
-Close.Position = UDim2.new(1, -45, 0, -2)  
-Close.Size = UDim2.new(0, 20, 0, 20)
-Close.ZIndex = 2
-Close.Image = "rbxassetid://3926305904"
-Close.ImageRectOffset = Vector2.new(284, 4)
-Close.ImageRectSize = Vector2.new(24, 24)
 
-local LogoButton = Instance.new("ImageButton")
-LogoButton.Name = "LogoButton"
-LogoButton.Parent = imgui
-LogoButton.BackgroundColor3 = Color3.fromRGB(41, 43, 47)
-LogoButton.BorderSizePixel = 0
-LogoButton.Position = UDim2.new(0.5, -40, 0.5, -40)
-LogoButton.Size = UDim2.new(0, 80, 0, 80)
-LogoButton.Visible = false
-LogoButton.Image = "rbxassetid://107371206137546" 
-LogoButton.ImageColor3 = ui_options.main_color
-LogoButton.Parent = Bar
-LogoButton.BackgroundColor3 = Color3.new(1, 1, 1)
-LogoButton.BackgroundTransparency = 1
-LogoButton.Position = UDim2.new(1, -25, 0, -2)  
-LogoButton.Size = UDim2.new(0, 20, 0, 20)
-LogoButton.ZIndex = 2
-LogoButton.Image = "rbxassetid://107371206137546"
-LogoButton.ScaleType = Enum.ScaleType.Fit
-LogoButton.ZIndex = 1000
-LogoButton.Active = true
-LogoButton.Draggable = true
+local HideLogo = Instance.new("ImageButton") HideLogo.Name = "HideLogo" 
+HideLogo.Parent = imgui HideLogo.BackgroundTransparency = 1 HideLogo.BorderSizePixel = 0 
+HideLogo.AnchorPoint = Vector2.new(0.5, 0.5) HideLogo.Position = UDim2.new(0.5, 0, 0.5, 0) 
+HideLogo.Size = UDim2.new(0, 60, 0, 60) HideLogo.Visible = false 
+HideLogo.Image = "rbxassetid://2851926732" HideLogo.ImageColor3 = ui_options.main_color HideLogo.ScaleType = Enum.ScaleType.Crop HideLogo.Draggable = true 
+HideLogo.ZIndex = 10000
 
-local LogoCorner = Instance.new("UICorner")
-LogoCorner.CornerRadius = UDim.new(0.2, 0)
-LogoCorner.Parent = LogoButton
 
-local LogoStroke = Instance.new("UIStroke")
-LogoStroke.Parent = LogoButton
+local HideButton = Instance.new("ImageButton") HideButton.Name = "HideButton"
+HideButton.Parent = Bar HideButton.BackgroundTransparency = 1 HideButton.BorderSizePixel = 0 
+HideButton.Position = UDim2.new(1, -50, 0, -2) HideButton.Size = UDim2.new(0, 20, 0, 20) HideButton.Image = "rbxassetid://6031094678" 
+HideButton.ImageColor3 = Color3.fromRGB(255, 165, 0)  HideButton.ScaleType = Enum.ScaleType.Fit HideButton.ZIndex = Bar.ZIndex + 2 
+
+
+
+local CloseButton = Instance.new("ImageButton") CloseButton.Name = "CloseButton" 
+CloseButton.Parent = Bar CloseButton.BackgroundTransparency = 1 CloseButton.BorderSizePixel = 0 
+CloseButton.Position = UDim2.new(1, -25, 0, -2) CloseButton.Size = UDim2.new(0, 20, 0, 20) CloseButton.Image = "rbxassetid://6031094667" 
+CloseButton.ImageColor3 = Color3.fromRGB(255, 0, 0)  
+CloseButton.ScaleType = Enum.ScaleType.Fit CloseButton.ZIndex = Bar.ZIndex + 2 
+
+HideButton.MouseButton1Click:Connect(function() 	Window.Visible = false 	
+HideLogo.Visible = true 	
+HideLogo.Position = UDim2.new(0.5, -30, 0.5, -30)
+end) 
+
+CloseButton.MouseButton1Click:Connect(function() 	Window:Destroy() 
+end)  
+
+HideLogo.MouseButton1Click:Connect(function() 	Window.Visible = true 	
+HideLogo.Visible = false 
+end)
+
 
 Resizer.Name = "Resizer"
 Resizer.Parent = Window
@@ -1111,44 +1105,55 @@ function library:AddWindow(title, options)
 		end)
 	end
 
-	do -- [Hide / Close] Window
-	local hide_button = Window:FindFirstChild("Bar"):FindFirstChild("Toggle")
-	local close_button = Window:FindFirstChild("Bar"):FindFirstChild("Close")
-	local logo_button = Window:FindFirstChild("Bar"):FindFirstChild("LogoButton")
+	do -- [Open / Close] Window
+		local open_close = Window:FindFirstChild("Bar"):FindFirstChild("Toggle")
+		local open = true
+		local canopen = true
 
-	-- HIDE BUTTON (Toggle)
-	-- HIDE BUTTON (Toggle arrow)
-	hide_button.MouseButton1Click:Connect(function()
-		Window.Visible = false
-		LogoButton.Visible = true
-	end)
+		local oldwindowdata = {}
+		local oldy = Window.AbsoluteSize.Y
+		open_close.MouseButton1Click:Connect(function()
+			if canopen then
+				canopen = false
 
-	-- CLOSE BUTTON (X)
-	close_button.MouseButton1Click:Connect(function()
-		Window:Destroy()
-	-- LOGO BUTTON (Show GUI ulit)
-	logo_button.MouseButton1Click:Connect(function()
-		Window.Visible = true
-	end)
+				if open then
+					-- Close
 
-	-- LOGO BUTTON (Show GUI again)
-	LogoButton.MouseButton1Click:Connect(function()
-		Window.Visible = true
-		LogoButton.Visible = false
-	-- CLOSE BUTTON (X - destroy window)
-	close_button.MouseButton1Click:Connect(function()
-		Window:Destroy()
-	end)
+					oldwindowdata = {}
+					for i,v in next, Window:FindFirstChild("Tabs"):GetChildren() do
+						oldwindowdata[v] = v.Visible
+						v.Visible = false
+					end
 
-	-- Logo color 
-	spawn(function()
-		while LogoButton and LogoButton.Parent do
-			LogoButton.ImageColor3 = options.main_color
-		while logo_button and logo_button.Parent do
-			logo_button.ImageColor3 = options.main_color
-			RS.Heartbeat:Wait()
-		end
-	end)
+					Resizer.Active = false
+
+					oldy = Window.AbsoluteSize.Y
+					Resize(open_close, {Rotation = 0}, options.tween_time)
+					Resize(Window, {Size = UDim2.new(0, Window.AbsoluteSize.X, 0, 26)}, options.tween_time)
+					open_close.Parent:FindFirstChild("Base").Transparency = 1
+
+				else
+					-- Open
+
+					for i,v in next, oldwindowdata do
+						i.Visible = v
+					end
+
+					Resizer.Active = true
+
+					Resize(open_close, {Rotation = 90}, options.tween_time)
+					Resize(Window, {Size = UDim2.new(0, Window.AbsoluteSize.X, 0, oldy)}, options.tween_time)
+					open_close.Parent:FindFirstChild("Base").Transparency = 0
+
+				end
+
+				open = not open
+				wait(options.tween_time)
+				canopen = true
+
+			end
+		end)
+	end
 
 	do -- UI Elements
 		local tabs = Window:FindFirstChild("Tabs")

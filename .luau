@@ -1301,13 +1301,14 @@ function library:AddWindow(title, options)
 
 						title.Text = slider_text
 						
+						
 						do -- Slider Math
-    -- Create draggable circle indicator
+    -- Create draggable circle indicator (glowing, colored)
     local circle = Instance.new("Frame")
     circle.Name = "CircleHandle"
     circle.Parent = slider
     circle.AnchorPoint = Vector2.new(0.5, 0.5)
-    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BackgroundColor3 = options.main_color
     circle.BorderSizePixel = 0
     circle.Position = UDim2.new(0, 0, 0.5, 0)
     circle.Size = UDim2.new(0, 18, 0, 18)
@@ -1317,25 +1318,43 @@ function library:AddWindow(title, options)
     circleCorner.CornerRadius = UDim.new(1, 0)
     circleCorner.Parent = circle
     
-    -- Inner circle for better look
-    local innerCircle = Instance.new("Frame")
-    innerCircle.Name = "Inner"
-    innerCircle.Parent = circle
-    innerCircle.AnchorPoint = Vector2.new(0.5, 0.5)
-    innerCircle.BackgroundColor3 = options.main_color
-    innerCircle.BorderSizePixel = 0
-    innerCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
-    innerCircle.Size = UDim2.new(0, 12, 0, 12)
-    innerCircle.ZIndex = circle.ZIndex + 1
+    -- Thin outline
+    local circleStroke = Instance.new("UIStroke")
+    circleStroke.Name = "Outline"
+    circleStroke.Parent = circle
+    circleStroke.Color = Color3.fromRGB(255, 255, 255)
+    circleStroke.Thickness = 1.5
+    circleStroke.Transparency = 0.3
     
-    local innerCorner = Instance.new("UICorner")
-    innerCorner.CornerRadius = UDim.new(1, 0)
-    innerCorner.Parent = innerCircle
+    -- Glow effect (inner shadow)
+    local glowCircle = Instance.new("Frame")
+    glowCircle.Name = "Glow"
+    glowCircle.Parent = circle
+    glowCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+    glowCircle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    glowCircle.BackgroundTransparency = 0.7
+    glowCircle.BorderSizePixel = 0
+    glowCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+    glowCircle.Size = UDim2.new(1, 4, 1, 4)
+    glowCircle.ZIndex = circle.ZIndex - 1
     
-    -- Keep inner circle color synced with main color
+    local glowCorner = Instance.new("UICorner")
+    glowCorner.CornerRadius = UDim.new(1, 0)
+    glowCorner.Parent = glowCircle
+    
+    local glowGradient = Instance.new("UIGradient")
+    glowGradient.Parent = glowCircle
+    glowGradient.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0.5),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    
+    -- Keep circle color synced with main color (brighter)
     spawn(function()
-        while innerCircle and innerCircle.Parent do
-            innerCircle.BackgroundColor3 = options.main_color
+        while circle and circle.Parent do
+            -- Make it brighter than the main color
+            local h, s, v = Color3.toHSV(options.main_color)
+            circle.BackgroundColor3 = Color3.fromHSV(h, s, math.min(v * 1.3, 1)) -- 30% brighter
             RS.Heartbeat:Wait()
         end
     end)
@@ -1406,16 +1425,18 @@ function library:AddWindow(title, options)
         end
     end)
     
-    -- Hover effect for circle (PC only)
+    -- Hover effect for circle (PC only) - grows and glows more
     circle.MouseEnter:Connect(function()
         if not slider_options.readonly then
             Resize(circle, {Size = UDim2.new(0, 22, 0, 22)}, 0.1)
+            Resize(glowCircle, {Size = UDim2.new(1, 8, 1, 8)}, 0.1)
         end
     end)
     
     circle.MouseLeave:Connect(function()
         if not dragging then
             Resize(circle, {Size = UDim2.new(0, 18, 0, 18)}, 0.1)
+            Resize(glowCircle, {Size = UDim2.new(1, 4, 1, 4)}, 0.1)
         end
     end)
     
@@ -1435,7 +1456,6 @@ function library:AddWindow(title, options)
     -- Initialize at minimum
     slider_data:Set(slider_options.min)
 end
-						
 
 
 						return slider_data, slider

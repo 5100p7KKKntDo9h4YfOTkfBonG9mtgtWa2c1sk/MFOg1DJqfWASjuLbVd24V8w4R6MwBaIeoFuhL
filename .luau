@@ -1301,55 +1301,82 @@ function library:AddWindow(title, options)
 
 						title.Text = slider_text
 						
-						
 						do -- Slider Math
-    -- Add visual circle indicator
-    local circle = Instance.new("ImageLabel")
-    circle.Name = "Circle"
-    circle.Parent = indicator
+    -- Create draggable circle indicator
+    local circle = Instance.new("Frame")
+    circle.Name = "CircleHandle"
+    circle.Parent = slider
     circle.AnchorPoint = Vector2.new(0.5, 0.5)
-    circle.BackgroundTransparency = 1
-    circle.Position = UDim2.new(1, 0, 0.5, 0)
-    circle.Size = UDim2.new(0, 16, 0, 16)
-    circle.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    circle.ImageColor3 = Color3.fromRGB(255, 255, 255)
-    circle.ZIndex = indicator.ZIndex + 2
+    circle.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    circle.BorderSizePixel = 0
+    circle.Position = UDim2.new(0, 0, 0.5, 0)
+    circle.Size = UDim2.new(0, 18, 0, 18)
+    circle.ZIndex = indicator.ZIndex + 3
     
-    -- Make it circular
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(1, 0)
-    corner.Parent = circle
-
+    local circleCorner = Instance.new("UICorner")
+    circleCorner.CornerRadius = UDim.new(1, 0)
+    circleCorner.Parent = circle
+    
+    -- Inner circle for better look
+    local innerCircle = Instance.new("Frame")
+    innerCircle.Name = "Inner"
+    innerCircle.Parent = circle
+    innerCircle.AnchorPoint = Vector2.new(0.5, 0.5)
+    innerCircle.BackgroundColor3 = options.main_color
+    innerCircle.BorderSizePixel = 0
+    innerCircle.Position = UDim2.new(0.5, 0, 0.5, 0)
+    innerCircle.Size = UDim2.new(0, 12, 0, 12)
+    innerCircle.ZIndex = circle.ZIndex + 1
+    
+    local innerCorner = Instance.new("UICorner")
+    innerCorner.CornerRadius = UDim.new(1, 0)
+    innerCorner.Parent = innerCircle
+    
+    -- Keep inner circle color synced with main color
+    spawn(function()
+        while innerCircle and innerCircle.Parent do
+            innerCircle.BackgroundColor3 = options.main_color
+            RS.Heartbeat:Wait()
+        end
+    end)
+    
     local function UpdateSlider(inputPosition)
         if slider_options.readonly then return end
         
         local relativeX = inputPosition.X - slider.AbsolutePosition.X
         local percentage = math.clamp(relativeX / slider.AbsoluteSize.X, 0, 1)
         
-        Resize(indicator, {Size = UDim2.new(percentage, 0, 0, 20)}, options.tween_time)
+        -- Update indicator bar
+        Resize(indicator, {Size = UDim2.new(percentage, 0, 1, 0)}, options.tween_time)
         
+        -- Update circle position
+        Resize(circle, {Position = UDim2.new(percentage, 0, 0.5, 0)}, options.tween_time)
+        
+        -- Calculate value
         local maxv = slider_options.max
         local minv = slider_options.min
         local diff = maxv - minv
-        local sel_value = math.floor(((diff * percentage)) + minv)
+        local sel_value = math.floor((diff * percentage) + minv)
         
         value.Text = tostring(sel_value)
         pcall(callback, sel_value)
     end
-
+    
     local dragging = false
     
-    -- Touch/Click Start
+    -- Mouse/Touch Start
     slider.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or 
            input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            Window.Draggable = false
-            UpdateSlider(input.Position)
+            if not slider_options.readonly and not dropdown_open then
+                dragging = true
+                Window.Draggable = false
+                UpdateSlider(input.Position)
+            end
         end
     end)
     
-    -- Touch/Click Move
+    -- Mouse/Touch Move
     slider.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or 
            input.UserInputType == Enum.UserInputType.Touch) then
@@ -1357,28 +1384,58 @@ function library:AddWindow(title, options)
         end
     end)
     
-    -- Touch/Click End
+    -- Circle specific events for better mobile support
+    circle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+           input.UserInputType == Enum.UserInputType.Touch then
+            if not slider_options.readonly and not dropdown_open then
+                dragging = true
+                Window.Draggable = false
+            end
+        end
+    end)
+    
+    -- Global input end
     UIS.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or 
            input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-            Window.Draggable = true
+            if dragging then
+                dragging = false
+                Window.Draggable = true
+            end
         end
     end)
-
+    
+    -- Hover effect for circle (PC only)
+    circle.MouseEnter:Connect(function()
+        if not slider_options.readonly then
+            Resize(circle, {Size = UDim2.new(0, 22, 0, 22)}, 0.1)
+        end
+    end)
+    
+    circle.MouseLeave:Connect(function()
+        if not dragging then
+            Resize(circle, {Size = UDim2.new(0, 18, 0, 18)}, 0.1)
+        end
+    end)
+    
     function slider_data:Set(new_value)
-        new_value = tonumber(new_value) or 0
-        local percentage = math.clamp((new_value - slider_options.min) / (slider_options.max - slider_options.min), 0, 1)
+        new_value = tonumber(new_value) or slider_options.min
+        new_value = math.clamp(new_value, slider_options.min, slider_options.max)
         
-        Resize(indicator, {Size = UDim2.new(percentage, 0, 0, 20)}, options.tween_time)
+        local percentage = (new_value - slider_options.min) / (slider_options.max - slider_options.min)
+        
+        Resize(indicator, {Size = UDim2.new(percentage, 0, 1, 0)}, options.tween_time)
+        Resize(circle, {Position = UDim2.new(percentage, 0, 0.5, 0)}, options.tween_time)
         
         value.Text = tostring(new_value)
         pcall(callback, new_value)
     end
-
-    slider_data:Set(slider_options["min"])
+    
+    -- Initialize at minimum
+    slider_data:Set(slider_options.min)
 end
-
+						
 
 
 						return slider_data, slider

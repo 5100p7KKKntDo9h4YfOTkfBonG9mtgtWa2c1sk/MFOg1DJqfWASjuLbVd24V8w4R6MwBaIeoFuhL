@@ -118,7 +118,7 @@ Window.Size = UDim2.new(0, 200, 0, 200)
 Window.Image = "rbxassetid://2851926732"
 Window.ImageColor3 = Color3.new(0.0823529, 0.0862745, 0.0901961)
 Window.ScaleType = Enum.ScaleType.Slice
-Window.SliceCenter = Rect.new(12, 12, 12, 12)
+Window.SliceCenter = Rect.new(12, 12, 12, 12) 
 
 local Close = Instance.new("ImageButton")
 Close.Name = "Close"
@@ -134,6 +134,14 @@ Close.ImageRectSize = Vector2.new(24, 24)
 
 local LogoButton = Instance.new("ImageButton")
 LogoButton.Name = "LogoButton"
+LogoButton.Parent = imgui
+LogoButton.BackgroundColor3 = Color3.fromRGB(41, 43, 47)
+LogoButton.BorderSizePixel = 0
+LogoButton.Position = UDim2.new(0.5, -40, 0.5, -40)
+LogoButton.Size = UDim2.new(0, 80, 0, 80)
+LogoButton.Visible = false
+LogoButton.Image = "rbxassetid://107371206137546" 
+LogoButton.ImageColor3 = ui_options.main_color
 LogoButton.Parent = Bar
 LogoButton.BackgroundColor3 = Color3.new(1, 1, 1)
 LogoButton.BackgroundTransparency = 1
@@ -142,12 +150,16 @@ LogoButton.Size = UDim2.new(0, 20, 0, 20)
 LogoButton.ZIndex = 2
 LogoButton.Image = "rbxassetid://107371206137546"
 LogoButton.ScaleType = Enum.ScaleType.Fit
+LogoButton.ZIndex = 1000
+LogoButton.Active = true
+LogoButton.Draggable = true
+
+local LogoCorner = Instance.new("UICorner")
+LogoCorner.CornerRadius = UDim.new(0.2, 0)
+LogoCorner.Parent = LogoButton
 
 local LogoStroke = Instance.new("UIStroke")
 LogoStroke.Parent = LogoButton
-LogoStroke.Color = Color3.fromRGB(255, 255, 255)
-LogoStroke.Thickness = 2
-LogoStroke.Transparency = 0.5
 
 Resizer.Name = "Resizer"
 Resizer.Parent = Window
@@ -174,18 +186,6 @@ Toggle.Rotation = 90
 Toggle.Size = UDim2.new(0, 20, 0, 20)
 Toggle.ZIndex = 2
 Toggle.Image = "https://www.roblox.com/Thumbs/Asset.ashx?width=600&height=600&assetId=107371206137546"
-
-local Close = Instance.new("ImageButton")
-Close.Name = "Close"
-Close.Parent = Bar
-Close.BackgroundColor3 = Color3.new(1, 1, 1)
-Close.BackgroundTransparency = 1
-Close.Position = UDim2.new(1, -25, 0, -2)
-Close.Size = UDim2.new(0, 20, 0, 20)
-Close.ZIndex = 2
-Close.Image = "rbxassetid://3926305904"
-Close.ImageRectOffset = Vector2.new(284, 4)
-Close.ImageRectSize = Vector2.new(24, 24)
 
 Base.Name = "Base"
 Base.Parent = Bar
@@ -1114,32 +1114,41 @@ function library:AddWindow(title, options)
 	do -- [Hide / Close] Window
 	local hide_button = Window:FindFirstChild("Bar"):FindFirstChild("Toggle")
 	local close_button = Window:FindFirstChild("Bar"):FindFirstChild("Close")
-	
+	local logo_button = Window:FindFirstChild("Bar"):FindFirstChild("LogoButton")
+
 	-- HIDE BUTTON (Toggle)
+	-- HIDE BUTTON (Toggle arrow)
 	hide_button.MouseButton1Click:Connect(function()
 		Window.Visible = false
 		LogoButton.Visible = true
 	end)
-	
+
 	-- CLOSE BUTTON (X)
 	close_button.MouseButton1Click:Connect(function()
 		Window:Destroy()
+	-- LOGO BUTTON (Show GUI ulit)
+	logo_button.MouseButton1Click:Connect(function()
+		Window.Visible = true
 	end)
-	
+
 	-- LOGO BUTTON (Show GUI again)
 	LogoButton.MouseButton1Click:Connect(function()
 		Window.Visible = true
 		LogoButton.Visible = false
+	-- CLOSE BUTTON (X - destroy window)
+	close_button.MouseButton1Click:Connect(function()
+		Window:Destroy()
 	end)
-	
-	-- Logo color sync
+
+	-- Logo color 
 	spawn(function()
 		while LogoButton and LogoButton.Parent do
 			LogoButton.ImageColor3 = options.main_color
+		while logo_button and logo_button.Parent do
+			logo_button.ImageColor3 = options.main_color
 			RS.Heartbeat:Wait()
 		end
 	end)
-end
 
 	do -- UI Elements
 		local tabs = Window:FindFirstChild("Tabs")
